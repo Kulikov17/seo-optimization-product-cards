@@ -1,0 +1,37 @@
+[tool.poetry]
+name = "seo-optimization-product-cards"
+version = "0.1.0"
+description = "Seo optimization product cards for marketplaces"
+authors = ["Dmitry Kulikov <dakulikov2001@mail.ru>"]
+readme = "README.md"
+repository = "https://github.com/Kulikov17/seo-optimization-product-cards"
+keywords = ["marketplaces", "data science", "deep learning", "seo"]
+packages = [{include = "seo-optimization-product-cards"}]
+
+[tool.poetry.dependencies]
+python = "~3.11"
+pandas = "^2.1.4"
+torch = "^2.1.1"
+torchvision = "^0.16.1"
+
+[tool.poetry.group.dev-dependencies.dependencies]
+pre-commit = "^3.5.0"
+flake8 = "^6.1.0"
+black = "^23.11.0"
+isort = "^5.12.0"
+
+[tool.black]
+line-length = 90
+target-version = ["py310"]
+
+[tool.isort]
+profile = "black"
+line_length = 90
+lines_after_imports = 2
+
+[flake8]
+max-line-length = 90
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

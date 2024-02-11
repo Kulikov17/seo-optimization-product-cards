@@ -1,33 +1,27 @@
 [tool.poetry]
 name = "seo-optimization-product-cards"
 version = "0.1.0"
-description = "Seo optimization product cards for marketplaces"
+description = "Seo optimization product cards"
 authors = ["Dmitry Kulikov <dakulikov2001@mail.ru>"]
 readme = "README.md"
 repository = "https://github.com/Kulikov17/seo-optimization-product-cards"
-keywords = ["marketplaces", "data science", "deep learning", "seo"]
+keywords = ["wildberries", "seo", "cv", "nlp", "deep learning"]
 packages = [{include = "seo-optimization-product-cards"}]
 
 [tool.poetry.dependencies]
-python = "~3.10"
-torch = "^2.1.0"
-torchvision = "^0.16.0"
-scikit-learn = "^1.2.2"
+python = "^3.10"
+fastapi = "^0.109.2"
 
-[tool.poetry.group.dev.dependencies]
+[tool.poetry.dev-dependencies]
 pre-commit = "^3.5.0"
-flake8 = "^6.1.0"
-black = "^23.11.0"
-isort = "^5.12.0"
-dvc = {extras = ["gdrive"], version = "^3.33.4"}
 flake8-pyproject = "^1.2.3"
-pyproject-pre-commit = "^0.1.3"
 
 [tool.black]
 line-length = 90
 target-version = ["py310"]
 
 [tool.isort]
+src_paths = ["fashion"]
 profile = "black"
 line_length = 90
 lines_after_imports = 2

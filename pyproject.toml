@@ -11,6 +11,7 @@ packages = [{include = "seo-optimization-product-cards"}]
 [tool.poetry.dependencies]
 python = "^3.10"
 fastapi = "^0.109.2"
+uvicorn = {extras = ["standard"], version = "^0.27.1"}
 
 [tool.poetry.dev-dependencies]
 pre-commit = "^3.5.0"
@@ -28,7 +29,7 @@ lines_after_imports = 2
 
 [tool.flake8]
 max-line-length = 90
-ignore = ['D100', 'D101', 'D103', 'T201']
+ignore = ['D100', 'D101', 'D103', 'T201', 'E722', 'E502']
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

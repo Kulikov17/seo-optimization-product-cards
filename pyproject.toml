@@ -6,12 +6,13 @@ authors = ["Dmitry Kulikov <dakulikov2001@mail.ru>"]
 readme = "README.md"
 repository = "https://github.com/Kulikov17/seo-optimization-product-cards"
 keywords = ["wildberries", "seo", "cv", "nlp", "deep learning"]
-packages = [{include = "seo-optimization-product-cards"}]
+packages = [{include = "src"}]
 
 [tool.poetry.dependencies]
 python = "^3.10"
-fastapi = "^0.109.2"
+fastapi = "^0.110.0"
 uvicorn = {extras = ["standard"], version = "^0.27.1"}
+aiogram = "^3.4.1"
 
 [tool.poetry.dev-dependencies]
 pre-commit = "^3.5.0"
@@ -29,7 +30,7 @@ lines_after_imports = 2
 
 [tool.flake8]
 max-line-length = 90
-ignore = ['D100', 'D101', 'D103', 'T201', 'E722', 'E502']
+ignore = ['D100', 'D101', 'D103', 'T201', 'E722', 'E502', 'E402']
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

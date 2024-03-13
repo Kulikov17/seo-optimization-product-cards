@@ -1,16 +1,20 @@
-import sqlite3
+import sys
+sys.path.append('src')
 
+import sqlite3
 from pydantic import BaseModel
 from fastapi import FastAPI, HTTPException
 from typing import List
+from config import DATABASE_PATH
 
 
 class UserDto(BaseModel):
-    user_id: str
+    chat_id: str
     username: str
+    first_name:  str | None = None
+    last_name: str | None = None
 
 
-DATABASE_PATH = './db/seo_database.db'
 app = FastAPI()
 
 
@@ -19,11 +23,10 @@ async def get_users() -> List[UserDto]:
     try:
         con = sqlite3.connect(DATABASE_PATH)
         cur = con.cursor()
-        print(cur)
         cur.execute('SELECT * FROM users')
-        print(cur)
-        users = cur.fetchall()
-        print(users)
+        columns = [col[0] for col in cur.description]
+        users = [dict(zip(columns, row)) for row in cur.fetchall()]
+
         con.close()
 
         return users
@@ -36,25 +39,29 @@ async def create_user(user: UserDto):
     try:
         con = sqlite3.connect(DATABASE_PATH)
         cur = con.cursor()
+        cur.execute('SELECT * FROM users')
         cur.execute(
-            'INSERT INTO users (user_id, username) VALUES (?, ?)', \
-            (user.user_id, user.username)
+            'INSERT INTO users (chat_id, username, first_name, last_name) VALUES (?, ?, ?, ?)',
+            (user.chat_id, user.username, user.first_name, user.last_name)
         )
         con.commit()
         con.close()
+
+        return None
     except:
         raise HTTPException(status_code=500, detail="Unknown Error")
 
 
-@app.get('/users/{id}')
-async def get_user_by_id(id: str) -> UserDto:
+@app.get('/users/{chat_id}')
+async def get_user_by_chat_id(chat_id: str) -> UserDto:
     try:
         con = sqlite3.connect(DATABASE_PATH)
         cur = con.cursor()
-        cur.execute('SELECT * FROM users where user_id=?', (id))
-        user = cur.fetchone()
+        cur.execute(f'SELECT * FROM users where chat_id={chat_id}')
+        columns = [col[0] for col in cur.description]
+        result = [dict(zip(columns, row)) for row in cur.fetchall()]
         con.close()
 
-        return {'user_id': user[0], 'username': user[1]}
+        return result[0]
     except:
         raise HTTPException(status_code=404, detail="Users not found")

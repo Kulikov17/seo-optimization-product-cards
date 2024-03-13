@@ -1,11 +1,8 @@
-import sys
-sys.path.append('src')
-
 import sqlite3
 from pydantic import BaseModel
 from fastapi import FastAPI, HTTPException
 from typing import List
-from config import DATABASE_PATH
+from init import init_tables
 
 
 class UserDto(BaseModel):
@@ -15,6 +12,9 @@ class UserDto(BaseModel):
     last_name: str | None = None
 
 
+DATABASE_PATH = 'seo_database.db'
+
+init_tables(DATABASE_PATH)
 app = FastAPI()
 
 

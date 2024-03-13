@@ -1,6 +1,3 @@
-import sys
-sys.path.append('src')
-
 from aiogram import Router, F
 from aiogram.filters import Command, CommandStart, StateFilter
 from aiogram.types import Message, PhotoSize
@@ -9,8 +6,9 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import default_state, State, StatesGroup
 
 import requests
-from config import API_URL
 
+
+API_URL = 'http://127.0.0.1:8000'
 
 class Seo(StatesGroup):
     upload_photo = State()   # Состояние ожидания загрузки фото

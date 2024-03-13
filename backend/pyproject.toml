@@ -1,0 +1,34 @@
+[tool.poetry]
+name = "backend"
+version = "0.1.0"
+description = "Backend for seo optimization product cards"
+authors = ["Dmitry Kulikov <dakulikov2001@mail.ru>"]
+repository = "https://github.com/Kulikov17/seo-optimization-product-cards"
+keywords = ["wildberries", "seo", "cv", "nlp", "deep learning"]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+fastapi = "^0.110.0"
+uvicorn = {extras = ["standard"], version = "^0.27.1"}
+
+[tool.poetry.dev-dependencies]
+pre-commit = "^3.5.0"
+flake8-pyproject = "^1.2.3"
+
+[tool.black]
+line-length = 90
+target-version = ["py310"]
+
+[tool.isort]
+src_paths = ["fashion"]
+profile = "black"
+line_length = 90
+lines_after_imports = 2
+
+[tool.flake8]
+max-line-length = 90
+ignore = ['D100', 'D101', 'D103', 'T201', 'E722', 'E502', 'E402']
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

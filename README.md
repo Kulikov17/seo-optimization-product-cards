@@ -1,5 +1,37 @@
 # SEO-оптимизация карточек товара на маркетплейсах
 
+## Checkpoint_1
+
+Для первого чекпоинта был подготовлен проект со своим backend и tg ботом (@SeoProductCardsBot). Была обучена модель effecientnet-small для классификации футболки и джинсов (можно посмотреть в папке notebooks), в боте нужно будет написать команду `/check`. При запуске бота (команда `/start`) информация по пользователю сохранится в БД sqlite. Предсказание можно протестировать на своих фотографиях либо взять из папки test. Проект будет усложняться в процессе.
+
+### Команды для запуска
+
+Открыть два терминала для поднятие контейнеров backend и tg бота. 
+
+Для backend:
+1. `cd backend` - перейти в папку в backend
+2. `poetry install --no-root --no-cache --only dev` - установить dev зависимости
+3. `poetry run dvc pull` - подтянуть данные для модели
+4. `docker build -t backend .` - собрать образ (хочу предупредить билдилось долго 1179.4s)
+5. `docker run --rm -it --name backend -p 8000:8000 backend` - запустить контейнер
+
+Для tg бота:
+
+1. `cd telegram` - перейти в папку в tg бота
+2. `docker build -t telegram . --build-arg="tg_token=6930325282:AAEk7NKx2RP-P_G_7yyYHyY4ucpJrqYbwAM"` - собрать образ (временно в гит вставил ключ, в конце проекта уберу)
+3. `docker run --rm -it --name telegram telegram` - запустить контейнер
+
+Чтобы получить доступ из одного докер-контейнера в другой докер-контейнер нужно добавить их в одну сеть (подсмотрел в этой [статье](https://habr.com/ru/articles/554190/)). 
+
+1. `docker network create seo-network` - создаем сеть 
+2. `docker network connect seo-network backend` - добавляем в сеть backend
+3. `docker network connect seo-network telegram` - добавляем в сеть telegramm
+
+И если теперь запустить инспектирование сети (`docker network inspect seo-network`), то в секции Containers мы увидим наши контейнеры.
+
+Это все :), теперь ботом можно пользоваться!
+
+
 # Студенты, выполняющие работы:
 Бузаева Софья Михайловна, telegram: @ethee_real 
 

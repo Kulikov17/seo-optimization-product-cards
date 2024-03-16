@@ -5,10 +5,10 @@ from aiogram.types import Message, PhotoSize
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import default_state, State, StatesGroup
 
-#import requests
+import requests
 
+API_URL = 'http://backend:8000'
 
-#API_URL = 'http://127.0.0.1:8000'
 
 class Seo(StatesGroup):
     upload_photo = State()   # Состояние ожидания загрузки фото
@@ -32,7 +32,7 @@ async def process_start_command(message: Message):
             'first_name': message.from_user.first_name,
             'last_name': message.from_user.last_name}
 
-    #requests.post(f'{API_URL}/users', json=user)
+    requests.post(f'{API_URL}/users', json=user)
 
     await message.answer(
         text='Этот бот демонстрирует работу c seo для карточки товара\n\n'

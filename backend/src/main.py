@@ -1,20 +1,23 @@
 import sqlite3
-from pydantic import BaseModel
-from fastapi import FastAPI, HTTPException
+import io
+from fastapi import FastAPI, HTTPException, UploadFile
 from typing import List
-from init import init_tables
+from PIL import Image
+from src.dto.prediction import PredictionDto
+from src.dto.user import UserDto
+from src.ml.models import load_model
+from src.ml.predict import predict
+from src.init import init_tables
 
 
-class UserDto(BaseModel):
-    chat_id: str
-    username: str
-    first_name:  str | None = None
-    last_name: str | None = None
-
-
+# Инициализация БД
 DATABASE_PATH = 'seo_database.db'
-
 init_tables(DATABASE_PATH)
+
+# Инициализация модели
+model = load_model('./data/model.pth', 2)
+
+# Инициализация приложения
 app = FastAPI()
 
 
@@ -65,3 +68,16 @@ async def get_user_by_chat_id(chat_id: str) -> UserDto:
         return result[0]
     except:
         raise HTTPException(status_code=404, detail="Users not found")
+
+
+@app.post('/predict')
+async def predict_product_category(img_file: UploadFile) -> PredictionDto:
+    try:
+        contents = await img_file.read()
+        img = Image.open(io.BytesIO(contents)).convert('RGB')
+
+        result = predict(model, img)
+
+        return {'result': result}
+    except:
+        raise HTTPException(status_code=500, detail="Unknown Error")

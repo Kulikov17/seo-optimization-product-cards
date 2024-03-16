@@ -1,4 +1,5 @@
-from aiogram import Router, F
+import json
+from aiogram import Bot, Router, F
 from aiogram.filters import Command, CommandStart, StateFilter
 from aiogram.types import Message, PhotoSize
 
@@ -80,16 +81,20 @@ async def process_check_command(message: Message, state: FSMContext):
                 F.photo[-1].as_('largest_photo'))
 async def process_photo_sent(message: Message,
                              state: FSMContext,
-                             largest_photo: PhotoSize):
-    # Cохраняем данные фото (file_unique_id и file_id) в хранилище
-    # по ключам "photo_unique_id" и "photo_id"
-    await state.update_data(
-        photo_unique_id=largest_photo.file_unique_id,
-        photo_id=largest_photo.file_id
-    )
+                             largest_photo: PhotoSize,
+                             bot: Bot):
 
-    # Отправляем пользователю сообщение с клавиатурой
-    await message.answer(text='Спасибо за фото!\n')
+    file = await bot.get_file(largest_photo.file_id)
+    file_path = file.file_path
+    bfile = await bot.download_file(file_path)
+
+    response = requests.post(f'{API_URL}/predict', files={'img_file': bfile})
+    response_json = json.loads(response.text)
+
+    prediction = 'джинсы' if response_json['result'] == 'Jeans' else 'футболку'
+
+    await state.clear()
+    await message.answer(text=f'Вы отправили {prediction}')
 
 
 # Этот хэндлер будет срабатывать, если во время отправки фото

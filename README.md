@@ -31,6 +31,26 @@
 
 Это все :), теперь ботом можно пользоваться!
 
+## Checkpoint_2
+
+Для второго чекпоинта была заиспользована БД PostgreSQL и настроено окружение в виде docker-compose файла.
+
+Также я подключил pgAdmin, состояние БД можно посмотреть и через UI http://localhost:5050/ 
+
+Параметры для подключения: 
+- host `postgres_container`
+- port `5432`
+- dbname `seo-product-cards`
+- user `kulikov`
+- password `kulikov`
+
+Сохранил для себя полезные статьи по настройке docker-compose: [тык1](https://habr.com/ru/articles/578744/), [тык2](https://habr.com/ru/articles/735274/).
+
+- `docker-compose --project-name="seo-product-cards-pg-16" up -d` - команда по запуску docker-compose
+
+- `docker-compose --project-name="seo-product-cards-pg-16" down` - команда по остановке docker-compose
+
+Но посмотреть пункт выше: перед началом необходимо подтянуть данные модели!
 
 # Студенты, выполняющие работы:
 Бузаева Софья Михайловна, telegram: @ethee_real 

@@ -88,7 +88,7 @@ async def process_photo_sent(message: Message,
     file_path = file.file_path
     bfile = await bot.download_file(file_path)
 
-    response = requests.post(f'{API_URL}/predict', files={'img_file': bfile})
+    response = requests.post(f'{API_URL}/model/predict', files={'img_file': bfile})
     response_json = json.loads(response.text)
 
     prediction = 'джинсы' if response_json['result'] == 'Jeans' else 'футболку'
@@ -106,3 +106,43 @@ async def warning_not_photo(message: Message):
              'фото товара\n\nЕсли вы хотите прервать '
              'работу - отправьте команду /cancel'
     )
+
+
+# Этот хэндлер будет срабатывать на команду /train
+# и ставить модель в очередь на обучение
+@router.message(Command(commands='train'), StateFilter(default_state))
+async def process_train_command(message: Message, state: FSMContext):
+    chat_id = str(message.chat.id)
+    response = requests.get(f'{API_URL}/model/train', params={'chat_id': chat_id})
+
+    if response.status_code == 200:
+        await message.answer(
+            text='Вы поставили модель обучаться, чтобы отслеживать статус введите команду /train_statuses'
+        )
+    else:
+        await message.answer(
+            text='Произошла ошибка, попробуйте еще раз'
+        )
+
+
+# Этот хэндлер будет срабатывать на команду /train_statuses
+# и показывать статусы обучения
+@router.message(Command(commands='train_statuses'), StateFilter(default_state))
+async def process_train_statuses_command(message: Message, state: FSMContext):
+    response = requests.get(f'{API_URL}/model/train_statuses')
+
+    if response.status_code == 200:
+        res_arr = response.json()
+
+        if len(res_arr) == 0:
+            await message.answer(text='Нет задач в обучении')
+        else:
+            res_str = ''
+            for res in res_arr:
+                res_str += f"taskId: {res['task_id']} status: {res['status']}\n"
+
+            await message.answer(text=res_str)
+    else:
+        await message.answer(
+            text='Произошла ошибка, попробуйте еще раз'
+        )

@@ -1,14 +1,14 @@
 import json
 from aiogram import Bot, Router, F
 from aiogram.filters import Command, CommandStart, StateFilter
-from aiogram.types import Message, PhotoSize
+from aiogram.types import Message, PhotoSize, URLInputFile
 
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import default_state, State, StatesGroup
 
 import requests
 
-API_URL = 'http://backend:8000'
+API_URL = 'http://reverse_proxy'
 
 
 class Seo(StatesGroup):
@@ -35,11 +35,14 @@ async def process_start_command(message: Message):
 
     requests.post(f'{API_URL}/users', json=user)
 
-    await message.answer(
-        text='Этот бот демонстрирует работу c seo для карточки товара\n\n'
-             'Чтобы перейти к работе - '
-             'отправьте команду /check'
+    start_bot_image = URLInputFile(
+        f'{API_URL}/start_bot.jpg',
+        filename='start_bot.jpg'
     )
+
+    text = 'Этот бот демонстрирует работу c seo для карточки товара.\nЧтобы перейти к работе - отправьте команду /check'
+
+    await message.answer_photo(start_bot_image, text)
 
 
 # Этот хэндлер будет срабатывать на команду /cancel в состоянии

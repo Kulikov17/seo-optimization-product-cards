@@ -8,7 +8,7 @@ from aiogram.fsm.state import default_state, State, StatesGroup
 
 import requests
 
-API_URL = 'http://reverse_proxy'
+API_URL = 'http://seo-product-server'
 
 
 class Seo(StatesGroup):

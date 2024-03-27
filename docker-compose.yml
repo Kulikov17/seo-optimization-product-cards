@@ -136,7 +136,7 @@ services:
       - seo-network
   
   nginx:
-    container_name: reverse_proxy
+    container_name: seo-product-server
     image: nginx:latest
     volumes:
       - ./configs/nginx.conf:/etc/nginx/nginx.conf

@@ -63,10 +63,10 @@
 Параметры запуска:
 
 1. `cd backend` - перейти в папку в backend
-2. `poetry install --no-root --no-cache --only dev` - установить dev зависимости
+2. `poetry install --no-root --only dev` - установить dev зависимости
 3. `poetry run dvc pull` - подтянуть данные для модели и для обучения
 4. `unzip -q './data/wildberries.zip' -d './data'` - разархивируйте zip файл с данными
-5. `docker-compose --project-name="seo-product-cards-pg-16" up -d` - команда по запуску docker-compose
+5. `docker-compose --project-name="seo-product-cards-pg-16" --env-file=.env up -d` - команда по запуску docker-compose
 
 
 

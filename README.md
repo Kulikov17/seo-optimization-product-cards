@@ -46,9 +46,11 @@
 
 Сохранил для себя полезные статьи по настройке docker-compose: [тык1](https://habr.com/ru/articles/578744/), [тык2](https://habr.com/ru/articles/735274/).
 
-- `docker-compose --project-name="seo-product-cards-pg-16" up -d` - команда по запуску docker-compose
+- `docker-compose --project-name="seo-product-cards-pg-16" --env-file=.env up -d` - команда по запуску docker-compose
 
 - `docker-compose --project-name="seo-product-cards-pg-16" down` - команда по остановке docker-compose
+
+Необходимо заполнить свои данные в `.env` файле.
 
 Но посмотреть пункт выше: перед началом необходимо подтянуть данные модели!
 

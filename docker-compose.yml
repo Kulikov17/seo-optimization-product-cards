@@ -2,10 +2,12 @@ version: "3.9"
 services:
   telegram:
     image: telegram:0.0.1
-    build:
-      context: ./telegram
-      args:
-        - tg_token=6930325282:AAEk7NKx2RP-P_G_7yyYHyY4ucpJrqYbwAM
+    build: ./telegram
+    environment:
+      TG_TOKEN: ${TG_TOKEN}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     depends_on:
       - backend
     networks:
@@ -14,6 +16,11 @@ services:
   backend:
     image: backend:0.0.1
     build: ./backend
+    environment:
+      TG_TOKEN: ${TG_TOKEN}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
       - "8000:8000"
     depends_on:
@@ -26,9 +33,9 @@ services:
     container_name: postgres_container
     image: postgres:16.1-alpine3.18
     environment:
-      POSTGRES_DB: "seo-product-cards"
-      POSTGRES_USER: "kulikov"
-      POSTGRES_PASSWORD: "kulikov"
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       PGDATA: "/var/lib/postgresql/data/pgdata"
     volumes:
       - ./migrations:/docker-entrypoint-initdb.d
@@ -54,9 +61,9 @@ services:
     container_name: pgadmin_container
     image: dpage/pgadmin4:8.4
     environment:
-      PGADMIN_DEFAULT_EMAIL: "dakulikov2001@mail.ru"
-      PGADMIN_DEFAULT_PASSWORD: "kulikov"
-      PGADMIN_CONFIG_SERVER_MODE: "False" # To allow running in desktop mode
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
+      PGADMIN_CONFIG_SERVER_MODE: "False"
     volumes:
       - pgadmin-data:/var/lib/pgadmin
     ports:

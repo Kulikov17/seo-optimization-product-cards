@@ -101,7 +101,12 @@ services:
   celery-worker:
     container_name: celery-worker
     build: ./backend
-    command: poetry run celery -A src.main.celery worker -l info -Q model -P threads
+    environment:
+      TG_TOKEN: ${TG_TOKEN}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    command: poetry run celery -A src.main.celery worker -l info -Q model --concurrency=1 -P threads
     volumes:
       - celery_data:/app
     depends_on:

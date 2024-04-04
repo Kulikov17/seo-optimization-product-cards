@@ -80,7 +80,7 @@ def save_model(dir_path, model, optimizer):
 def training(dir_path,
              epochs=3,
              lr=1e-3,
-             batch_size=8,
+             batch_size=4,
              image_size=224,
              num_workers=2):
 

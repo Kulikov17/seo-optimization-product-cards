@@ -1,5 +1,5 @@
+import os
 import asyncio
-import argparse
 import logging
 
 from aiogram import Bot, Dispatcher
@@ -16,9 +16,7 @@ async def main(token):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument('-t', dest='token', required=True)
-    args = parser.parse_args()
+    token = os.environ["TG_TOKEN"]
 
     logging.basicConfig(level=logging.INFO)
-    asyncio.run(main(args.token))
+    asyncio.run(main(token))

@@ -1,8 +1,5 @@
 FROM python:3.10 as python-base
 
-ARG tg_token
-# use the value to set the ENV var default
-ENV TG_TOKEN=$tg_token
 
 # https://python-poetry.org/docs#ci-recommendations
 ENV POETRY_VERSION=1.7.1
@@ -34,4 +31,4 @@ RUN poetry install
 COPY . /app
 
 # 
-CMD poetry run python src/main.py -t ${TG_TOKEN}
+CMD poetry run python src/main.py

@@ -21,9 +21,6 @@ WORKDIR /app
 # Copy Dependencies
 COPY poetry.lock pyproject.toml ./
 
-# [OPTIONAL] Validate the project is properly configured
-RUN poetry check
-
 # Install Dependencies
 RUN poetry install
 

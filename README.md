@@ -18,7 +18,7 @@
 Для tg бота:
 
 1. `cd telegram` - перейти в папку в tg бота
-2. `docker build -t telegram . --build-arg="tg_token=6930325282:AAEk7NKx2RP-P_G_7yyYHyY4ucpJrqYbwAM"` - собрать образ (временно в гит вставил ключ, в конце проекта уберу)
+2. `docker build -t telegram . --build-arg="tg_token=ADD_YOUR_KEY"` - собрать образ (временно в гит вставил ключ, в конце проекта уберу)
 3. `docker run --rm -it --name telegram telegram` - запустить контейнер
 
 Чтобы получить доступ из одного докер-контейнера в другой докер-контейнер нужно добавить их в одну сеть (подсмотрел в этой [статье](https://habr.com/ru/articles/554190/)). 

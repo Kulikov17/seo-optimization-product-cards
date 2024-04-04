@@ -13,13 +13,11 @@ async def get_users() -> List[UserDto]:
         conn = db_conn()
         conn.autocommit = True
 
-        cursor = conn.cursor()
-        cursor.execute('SELECT * FROM users')
+        with conn.cursor() as cursor:
+            cursor.execute('SELECT * FROM users')
+            columns = [col[0] for col in cursor.description]
+            users = [dict(zip(columns, row)) for row in cursor.fetchall()]
 
-        columns = [col[0] for col in cursor.description]
-        users = [dict(zip(columns, row)) for row in cursor.fetchall()]
-
-        cursor.close()
         conn.close()
 
         return users
@@ -38,13 +36,12 @@ async def create_user(user: UserDto):
             VALUES(%s, %s, %s, %s)
         """
 
-        cursor = conn.cursor()
-        cursor.execute(sql, (user.chat_id,
-                             user.username,
-                             user.first_name,
-                             user.last_name))
+        with conn.cursor() as cursor:
+            cursor.execute(sql, (user.chat_id,
+                                 user.username,
+                                 user.first_name,
+                                 user.last_name))
 
-        cursor.close()
         conn.close()
 
         return None
@@ -58,14 +55,11 @@ async def get_user_by_chat_id(chat_id: str) -> UserDto:
         conn = db_conn()
         conn.autocommit = True
 
-        cursor = conn.cursor()
+        with conn.cursor() as cursor:
+            cursor.execute(f'SELECT * FROM users where chat_id={chat_id}')
+            columns = [col[0] for col in cursor.description]
+            result = [dict(zip(columns, row)) for row in cursor.fetchall()]
 
-        cursor.execute(f'SELECT * FROM users where chat_id={chat_id}')
-
-        columns = [col[0] for col in cursor.description]
-        result = [dict(zip(columns, row)) for row in cursor.fetchall()]
-
-        cursor.close()
         conn.close()
 
         return result[0]

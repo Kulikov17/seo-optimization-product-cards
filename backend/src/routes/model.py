@@ -21,13 +21,11 @@ async def train_statuses_model() -> List[TrainStatusDto]:
         conn = db_conn()
         conn.autocommit = True
 
-        cursor = conn.cursor()
-        cursor.execute('SELECT * FROM celery')
+        with conn.cursor() as cursor:
+            cursor.execute('SELECT * FROM celery')
+            columns = [col[0] for col in cursor.description]
+            statuses = [dict(zip(columns, row)) for row in cursor.fetchall()]
 
-        columns = [col[0] for col in cursor.description]
-        statuses = [dict(zip(columns, row)) for row in cursor.fetchall()]
-
-        cursor.close()
         conn.close()
 
         return statuses

@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: seo
+  name: telegram
+  labels:
+    app: telegram
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: telegram
+  template:
+    metadata:
+      labels:
+        app: telegram
+    spec:
+      containers:
+      - name: telegram
+        image: kulikov17/seo-telegram:0.0.1
+        env:
+          - name: TG_TOKEN
+            valueFrom:
+              secretKeyRef:
+                name: secret-data
+                key: tg_token
+        resources:
+          limits:
+              memory: "256Mi"
+              cpu: "500m"
+        ports:
+        - containerPort: 8085

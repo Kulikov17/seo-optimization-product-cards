@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: seo
+  name: postgres
+  labels:
+    app: postgres
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+      - name: postgres
+        image: postgres:16.2
+        ports:
+          - containerPort: 5432
+        env:
+          - name: POSTGRES_DB
+            valueFrom:
+              secretKeyRef:
+                name: secret-data
+                key: postgres_db
+          - name: POSTGRES_USER
+            valueFrom:
+              secretKeyRef:
+                name: secret-data
+                key: postgres_user
+          - name: POSTGRES_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: secret-data
+                key: postgres_password
+        volumeMounts:
+          - name: db-data
+            mountPath: /var/lib/postgresql/data
+          - name: postgres-initdb
+            mountPath: /docker-entrypoint-initdb.d
+        resources:
+          limits:
+            memory: "256Mi"
+            cpu: "500m"
+        livenessProbe:
+          exec:
+            command:
+              - bash
+              - "-c"
+              - "pg_isready -U postgres"
+          initialDelaySeconds: 0
+          periodSeconds: 10
+          timeoutSeconds: 5
+      volumes:
+          - name: db-data
+            hostPath:
+              path: "/home/docker/pgdata"
+          - name: postgres-initdb
+            configMap:
+              name: postgres-configmap

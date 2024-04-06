@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: seo
+  name: backend
+  labels:
+    app: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+      - name: backend
+        image: kulikov17/seo-backend:0.0.1
+        env:
+          - name: TG_TOKEN
+            valueFrom:
+              secretKeyRef:
+                name: secret-data
+                key: tg_token
+          - name: POSTGRES_DB
+            valueFrom:
+              secretKeyRef:
+                name: secret-data
+                key: postgres_db
+          - name: POSTGRES_USER
+            valueFrom:
+              secretKeyRef:
+                name: secret-data
+                key: postgres_user
+          - name: POSTGRES_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: secret-data
+                key: postgres_password
+        resources:
+          limits:
+            memory: "1Gi"
+            cpu: "2"
+        ports:
+        - containerPort: 8000
+        livenessProbe:
+          httpGet:
+            path: /docs
+            port: 8000
+          initialDelaySeconds: 0
+          periodSeconds: 30
+          timeoutSeconds: 2
+        readinessProbe:
+          httpGet:
+            path: /docs
+            port: 8000
+          initialDelaySeconds: 5
+          periodSeconds: 30
+          timeoutSeconds: 2

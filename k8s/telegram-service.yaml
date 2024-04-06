@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: seo
+  name: telegram
+spec:
+  selector:
+    app: telegram
+  ports:
+  - port: 8085
+    targetPort: 8085

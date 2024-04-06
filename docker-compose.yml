@@ -5,9 +5,6 @@ services:
     build: ./telegram
     environment:
       TG_TOKEN: ${TG_TOKEN}
-      POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     depends_on:
       - backend
     networks:
@@ -36,7 +33,7 @@ services:
       - seo-network
 
   postgres:
-    container_name: postgres_container
+    container_name: postgres
     image: postgres:16.1-alpine3.18
     environment:
       POSTGRES_DB: ${POSTGRES_DB}
@@ -64,7 +61,7 @@ services:
       - seo-network
 
   pgadmin:
-    container_name: pgadmin_container
+    container_name: pgadmin
     image: dpage/pgadmin4:8.4
     environment:
       PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
@@ -136,7 +133,7 @@ services:
       - seo-network
   
   nginx:
-    container_name: seo-product-server
+    container_name: seo-products
     image: nginx:latest
     volumes:
       - ./configs/nginx.conf:/etc/nginx/nginx.conf

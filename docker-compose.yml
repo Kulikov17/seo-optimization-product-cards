@@ -146,6 +146,66 @@ services:
     networks:
       - seo-network
 
+  prometheus:
+    container_name: prometheus
+    image: prom/prometheus:v2.51.1
+    ports:
+      - 9090:9090
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - wget http://localhost:9090
+      interval: 1s
+      timeout: 1s
+      retries: 10
+      start_period: 10s
+    networks:
+      - seo-network
+
+  grafana:
+    container_name: grafana
+    image: grafana/grafana:10.1.9
+    ports:
+      - 3000:3000
+    volumes:
+      - ./grafana/logs:/var/lib/grafana
+    networks:
+      - seo-network
+
+  node-exporter:
+    container_name: node-exporter
+    image: prom/node-exporter:v1.7.0
+    ports:
+      - 9100:9100
+    volumes:    
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    depends_on:
+      prometheus:
+        condition: service_healthy
+    networks:
+      - seo-network
+
+  postgresql-exporter:
+    container_name: postgresql-exporter
+    image: prometheuscommunity/postgres-exporter:v0.15.0
+    ports:
+      - 9187:9187
+    environment:
+      DATA_SOURCE_NAME: "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?sslmode=disable"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      prometheus:
+        condition: service_healthy
+    networks:
+      - seo-network
+
 volumes:
   seo-product-cards-db-data:
   pgadmin-data:

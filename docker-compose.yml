@@ -5,9 +5,6 @@ services:
     build: ./telegram
     environment:
       TG_TOKEN: ${TG_TOKEN}
-      POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     depends_on:
       - backend
     networks:
@@ -22,7 +19,7 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
-      - "8000:8000"
+      - 8000:8000
     healthcheck:
       test: ["CMD-SHELL", "curl http://0.0.0.0:8000/"]
       interval: 10s
@@ -36,7 +33,7 @@ services:
       - seo-network
 
   postgres:
-    container_name: postgres_container
+    container_name: postgres
     image: postgres:16.1-alpine3.18
     environment:
       POSTGRES_DB: ${POSTGRES_DB}
@@ -47,7 +44,7 @@ services:
       - ./migrations:/docker-entrypoint-initdb.d
       - seo-product-cards-db-data:/var/lib/postgresql/data
     ports:
-      - "5432:5432"
+      - 5432:5432
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U kulikov -d seo-product-cards"]
       interval: 10s
@@ -64,7 +61,7 @@ services:
       - seo-network
 
   pgadmin:
-    container_name: pgadmin_container
+    container_name: pgadmin
     image: dpage/pgadmin4:8.4
     environment:
       PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
@@ -73,7 +70,7 @@ services:
     volumes:
       - pgadmin-data:/var/lib/pgadmin
     ports:
-      - "5050:80"
+      - 5050:80
     restart: unless-stopped
     deploy:
       resources:
@@ -87,8 +84,8 @@ services:
     container_name: rabbitmq
     image: rabbitmq:3.13-management
     ports:
-      - "5672:5672"
-      - "15672:15672"
+      - 5672:5672
+      - 15672:15672
     healthcheck:
       test: ["CMD-SHELL", "rabbitmq-diagnostics -q ping"]
       interval: 10s
@@ -131,6 +128,80 @@ services:
       - 5555:5555
     depends_on:
       celery-worker:
+        condition: service_healthy
+    networks:
+      - seo-network
+  
+  nginx:
+    container_name: seo-products
+    image: nginx:latest
+    volumes:
+      - ./configs/nginx.conf:/etc/nginx/nginx.conf
+      - ./static:/static
+    ports:
+      - 80:80
+    depends_on:
+      celery-worker:
+        condition: service_healthy
+    networks:
+      - seo-network
+
+  prometheus:
+    container_name: prometheus
+    image: prom/prometheus:v2.51.1
+    ports:
+      - 9090:9090
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - wget http://localhost:9090
+      interval: 1s
+      timeout: 1s
+      retries: 10
+      start_period: 10s
+    networks:
+      - seo-network
+
+  grafana:
+    container_name: grafana
+    image: grafana/grafana:10.1.9
+    ports:
+      - 3000:3000
+    volumes:
+      - ./grafana/logs:/var/lib/grafana
+    networks:
+      - seo-network
+
+  node-exporter:
+    container_name: node-exporter
+    image: prom/node-exporter:v1.7.0
+    ports:
+      - 9100:9100
+    volumes:    
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    depends_on:
+      prometheus:
+        condition: service_healthy
+    networks:
+      - seo-network
+
+  postgresql-exporter:
+    container_name: postgresql-exporter
+    image: prometheuscommunity/postgres-exporter:v0.15.0
+    ports:
+      - 9187:9187
+    environment:
+      DATA_SOURCE_NAME: "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?sslmode=disable"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      prometheus:
         condition: service_healthy
     networks:
       - seo-network

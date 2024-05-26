@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: seo
+  name: seo-products
+spec:
+  selector:
+    app: seo-products
+  ports:
+  - port: 80
+    targetPort: 80

@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: seo
+  name: seo-products
+  labels:
+    app: seo-products
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: seo-products
+  template:
+    metadata:
+      labels:
+        app: seo-products
+    spec:
+      containers:
+      - name: seo-products
+        image: kulikov17/seo-nginx:0.0.2
+        resources:
+          limits:
+            memory: "100Mi"
+            cpu: "100m"
+        ports:
+        - containerPort: 80
+        volumeMounts:
+          - name: nginx-configmap-conf
+            mountPath: /etc/nginx/nginx.conf
+            subPath: nginx.conf
+            readOnly: true
+      volumes:
+          - name: nginx-configmap-conf
+            configMap:
+              name: nginx-configmap

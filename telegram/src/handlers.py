@@ -8,7 +8,7 @@ from aiogram.fsm.state import default_state, State, StatesGroup
 
 import requests
 
-API_URL = 'http://seo-product-server'
+API_URL = 'http://seo-products'
 
 
 class Seo(StatesGroup):

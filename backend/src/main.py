@@ -20,6 +20,5 @@ def create_app() -> FastAPI:
 
     return current_app
 
-
 app = create_app()
 celery = app.celery_app

@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: telegram
-        image: kulikov17/seo-telegram:0.0.1
+        image: kulikov17/seo-telegram:0.0.3
         env:
           - name: TG_TOKEN
             valueFrom:

@@ -1,42 +1,25 @@
-import io
 from fastapi import APIRouter, HTTPException, UploadFile
-from typing import List
-from PIL import Image
-from src.db.db_connect import db_conn
 from src.db.db_execute_query import db_execute_query
-from src.celery.tasks import train_model_task
-from src.dto.train import TrainStatusDto
-from src.dto.prediction import PredictionDto
-from src.ml.models import load_model
-from src.ml.predict import predict
+from src.celery.tasks import generate_description_task, predict_category_task
 from celery import uuid
 
 
 router = APIRouter(prefix='/model')
 
 
-@router.get('/train_statuses')
-async def train_statuses_model() -> List[TrainStatusDto]:
+@router.post('/predict_category')
+async def predict_category(chat_id, img_file: UploadFile):
     try:
-        conn = db_conn()
-        conn.autocommit = True
+        image_id = uuid()
+        image_bin = await img_file.read()
 
-        with conn.cursor() as cursor:
-            cursor.execute('SELECT * FROM celery')
-            columns = [col[0] for col in cursor.description]
-            statuses = [dict(zip(columns, row)) for row in cursor.fetchall()]
+        query = """
+            INSERT INTO images(image_id, image, category, status)
+            VALUES(%s, %s, %s, %s)
+        """
 
-        conn.close()
+        db_execute_query(query, (image_id, image_bin, None, 'processing'))
 
-        return statuses
-    except:
-        raise HTTPException(status_code=500, detail="Unknown Error")
-
-
-@router.get('/train')
-async def train_model(chat_id: str):
-    try:
-        dir_path = './data'
         task_id = uuid()
 
         query = """
@@ -46,22 +29,70 @@ async def train_model(chat_id: str):
 
         db_execute_query(query, (task_id, 'PENDING'))
 
-        train_model_task.apply_async(args=[dir_path, chat_id], task_id=task_id)
+        predict_category_task.apply_async(args=[chat_id, image_id],
+                                          task_id=task_id)
+
+        return {'image_id': image_id}
+    except:
+        raise HTTPException(status_code=500, detail="Unknown Error")
+
+
+@router.post('/predict_detail_category')
+async def predict_detail_category(chat_id, image_id: str, category: str):
+    try:
+        task_id = uuid()
+
+        query = """
+            INSERT INTO celery(task_id, status)
+            VALUES(%s, %s)
+        """
+
+        db_execute_query(query, (task_id, 'PENDING'))
+
+        predict_category_task.apply_async(args=[chat_id, image_id, category],
+                                          task_id=task_id)
 
         return None
     except:
         raise HTTPException(status_code=500, detail="Unknown Error")
 
 
-@router.post('/predict')
-async def predict_product_category(img_file: UploadFile) -> PredictionDto:
+@router.post('/approve_predicted_category')
+async def approve_predicted_category(image_id: str,
+                                     category: str,
+                                     approved: bool):
     try:
-        contents = await img_file.read()
-        img = Image.open(io.BytesIO(contents)).convert('RGB')
+        query = """
+            UPDATE images
+            SET category = %s,
+                status = %s
+            WHERE image_id = %s;
+        """
 
-        model = load_model('./data/model.pth', 2)
-        result = predict(model, img)
+        status = 'approved' if approved else 'not_approved'
 
-        return {'result': result}
+        db_execute_query(query, (category, status, image_id))
+
+        return None
+    except:
+        raise HTTPException(status_code=500, detail="Unknown Error")
+
+
+@router.post('/generation_description')
+async def generation_description(chat_id: str, image_id: str, category: str,):
+    try:
+        task_id = uuid()
+
+        query = """
+            INSERT INTO celery(task_id, status)
+            VALUES(%s, %s)
+        """
+
+        db_execute_query(query, (task_id, 'PENDING'))
+
+        generate_description_task.apply_async(args=[chat_id, image_id, category],
+                                              task_id=task_id)
+
+        return None
     except:
         raise HTTPException(status_code=500, detail="Unknown Error")

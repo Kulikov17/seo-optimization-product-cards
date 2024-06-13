@@ -21,6 +21,8 @@ sqlalchemy = "^2.0.29"
 pandas = "^2.2.1"
 aiogram = "^3.4.1"
 prometheus-fastapi-instrumentator = "^7.0.0"
+safetensors = "^0.4.3"
+tokenizers = "^0.19.1"
 
 [tool.poetry.dev-dependencies]
 dvc = {extras = ["gdrive"], version = "^3.33.4"}

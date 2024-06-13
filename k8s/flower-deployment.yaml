@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: flower
-        image: kulikov17/seo-backend:0.0.1
+        image: kulikov17/seo-backend:0.0.2
         command: ["poetry", "run", "celery", "-A", "src.main.celery", "flower", "--port=5555"]
         env:
           - name: FLOWER_PORT

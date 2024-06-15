@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: seo-products
-        image: kulikov17/seo-nginx:0.0.2
+        image: kulikov17/seo-nginx:0.0.4
         resources:
           limits:
             memory: "100Mi"

@@ -10,3 +10,10 @@ CREATE TABLE IF NOT EXISTS "celery" (
     "task_id" VARCHAR(256) PRIMARY KEY,
     "status" VARCHAR(256)
 );
+
+CREATE TABLE IF NOT EXISTS "images" (
+    "image_id" VARCHAR(256) NOT NULL PRIMARY KEY,
+    "image" BYTEA,
+    "category" VARCHAR(256) DEFAULT NULL,
+    "status" VARCHAR(256) DEFAULT NULL
+);

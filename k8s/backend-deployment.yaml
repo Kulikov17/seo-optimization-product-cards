@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: backend
-        image: kulikov17/seo-backend:0.0.1
+        image: kulikov17/seo-backend:0.0.2
         env:
           - name: TG_TOKEN
             valueFrom:
